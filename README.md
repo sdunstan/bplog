@@ -1,2 +1,8 @@
 # bplog
-An open source blood pressure log
+
+A non-sketchy blood pressure log.
+
+## Getting Started
+
+For help getting started with Flutter, view our online
+[documentation](https://flutter.io/).
