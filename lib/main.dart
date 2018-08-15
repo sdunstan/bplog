@@ -17,6 +17,7 @@
 */
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:bplog/bp_form.dart';
 import 'package:bplog/persistence.dart';
 
@@ -139,28 +140,48 @@ class BPLogEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double opacity = (1.0 + this._bp.diastolic.toDouble()) / 500.0;
     int sys = _bp.systolic;
     int dia = _bp.diastolic;
+    DateTime bpTime = DateTime.fromMillisecondsSinceEpoch(this._bp.readingTime);
+    DateFormat fmt = DateFormat.yMMMMd().add_jm();
     Widget container = Container(
-        color: Colors.red.withOpacity(opacity),
+        decoration: BoxDecoration(
+            color: Colors.teal.shade100,
+            border: Border(
+              top: BorderSide(color: Colors.white, width: 10.0),
+              left: BorderSide(color: Colors.white, width: 10.0),
+              right: BorderSide(color: Colors.white, width: 10.0),
+            )
+        ),
         padding: const EdgeInsets.all(12.0),
-        child: Column(children: <Widget>[
+        child: DefaultTextStyle(
+            style: TextStyle(fontSize: 20.0, color: Colors.black.withAlpha(170)),
+            child: Column(
+            children: <Widget>[
             Row(
-              children: <Widget>[Text(
-                  DateTime.fromMillisecondsSinceEpoch(this._bp.readingTime)
-                  .toString())],
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(fmt.format(bpTime))
+              ],
             ),
             Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
               Expanded(
                   flex: 2,
                   child: Text("$sys / $dia",
                       style: TextStyle(fontWeight: FontWeight.bold),
-                      textScaleFactor: 1.5)),
-              Expanded(flex: 1, child: Text(this._bp.pulse.toString()))
+                      textScaleFactor: 1.5,
+                      textAlign: TextAlign.start,
+                    )
+              ),
+              Expanded(flex: 1,
+                  child: Text(this._bp.pulse.toString(),
+                    textAlign: TextAlign.end,
+                    textScaleFactor: 1.5,
+                  ))
             ])
           ])
-        );
+        ));
 
     return container;
   }
