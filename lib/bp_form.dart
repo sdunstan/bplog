@@ -41,7 +41,7 @@ class BloodPressureForm extends StatefulWidget {
   }
 }
 
-class BloodPressureState extends State<BloodPressureForm> {
+class BloodPressureState extends State<BloodPressureForm> with BloodPressureDBMixin {
   final _formKey = GlobalKey<FormState>();
   static const _insets = EdgeInsets.all(16.0);
 
@@ -125,10 +125,7 @@ class BloodPressureState extends State<BloodPressureForm> {
                   bp.systolic = int.tryParse(systolicController.text);
                   bp.pulse = int.tryParse(pulseController.text);
 
-                  BloodPressureProvider provider = BloodPressureProvider();
-                  await provider.open();
-                  await provider.insert(bp);
-                  await provider.close();
+                  insert(bp);
 
                   Navigator.of(context).pop();
                 }

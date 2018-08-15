@@ -16,8 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:bplog/bp_form.dart';
 import 'package:bplog/persistence.dart';
@@ -70,32 +68,25 @@ class HomeScreenBody extends StatefulWidget {
 
 }
 
-class _HomeScreenState extends State<HomeScreenBody> {
+class _HomeScreenState extends State<HomeScreenBody> with BloodPressureDBMixin {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("Querying records.");
     return new FutureBuilder<List<BloodPressure>>(
-      future: _bpList(),
+      future: listAll(),
       builder: (BuildContext context, AsyncSnapshot<List<BloodPressure>> snapshot) {
         switch(snapshot.connectionState) {
           case ConnectionState.none: return loadingList();
           case ConnectionState.waiting: return loadingList();
           default: {
+            debugPrint("Connection state is $snapshot.connectionState");
             Widget list = snapshotList(snapshot.data);
             return list;
           }
         }
       },
     );
-  }
-
-
-  Future<List<BloodPressure>> _bpList() async {
-    BloodPressureProvider provider = BloodPressureProvider();
-    await provider.open();
-    var data = await provider.getAll();
-    provider.close();
-    return data;
   }
 
   Widget loadingList() {
@@ -113,13 +104,32 @@ class _HomeScreenState extends State<HomeScreenBody> {
     return SliverList(
       delegate: SliverChildBuilderDelegate((BuildContext buildContext, int index) {
         debugPrint("Adding index $index to list");
-        return BPLogEntry(data[index]);
+        return DismissibleBPLogEntry(data[index]);
       },
           childCount: data.length
       ),
     );
   }
 
+}
+
+class DismissibleBPLogEntry extends StatelessWidget {
+  final BloodPressure _bp;
+
+  DismissibleBPLogEntry(this._bp);
+
+  @override
+  Widget build(BuildContext context) {
+    return Dismissible (
+      key: Key(_bp.id.toString()),
+      onDismissed: (direction) async {
+        BloodPressureDB db = BloodPressureDB();
+        await db.delete(_bp.id);
+      },
+      background: Container(color: Colors.red),
+      child: BPLogEntry(_bp)
+    );
+  }
 }
 
 class BPLogEntry extends StatelessWidget {
@@ -138,7 +148,7 @@ class BPLogEntry extends StatelessWidget {
         child: Column(children: <Widget>[
             Row(
               children: <Widget>[Text(
-                  DateTime.fromMicrosecondsSinceEpoch(this._bp.readingTime)
+                  DateTime.fromMillisecondsSinceEpoch(this._bp.readingTime)
                   .toString())],
             ),
             Row(crossAxisAlignment: CrossAxisAlignment.center, children: [

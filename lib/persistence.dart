@@ -73,7 +73,38 @@ class BloodPressure {
   }
 }
 
-class BloodPressureProvider {
+class BloodPressureDB extends BloodPressureDBMixin {
+
+}
+
+abstract class BloodPressureDBMixin {
+
+  void insert(BloodPressure bp) async {
+    var db = _BloodPressureProvider();
+    await db.open();
+    await db.insert(bp);
+    await db.close();
+  }
+
+  Future<List<BloodPressure>> listAll() async {
+    var db = _BloodPressureProvider();
+    await db.open();
+    List<BloodPressure> list = await db.getAll();
+    await db.close();
+    return list;
+  }
+
+  Future<int> delete(int id) async {
+    var db = _BloodPressureProvider();
+    await db.open();
+    int count = await db.delete(id);
+    await db.close();
+    return count;
+  }
+
+}
+
+class _BloodPressureProvider {
 
   Database db;
 
@@ -97,6 +128,10 @@ class BloodPressureProvider {
   Future<BloodPressure> insert(BloodPressure bp) async {
     bp.id = await db.insert(tableBP, bp.toMap());
     return bp;
+  }
+
+  Future<int> delete(int id) async {
+    return db.delete(tableBP, where: "$columnId=$id");
   }
 
   Future<List<BloodPressure>> getAll() async {
