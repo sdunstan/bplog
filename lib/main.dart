@@ -21,7 +21,8 @@ import 'package:intl/intl.dart';
 import 'package:bplog/bp_form.dart';
 import 'package:bplog/persistence.dart';
 
-void main() {
+void main() async {
+
   runApp(MaterialApp(
       title: 'Blood Pressure Log',
       home: HomeScreen(),
@@ -51,18 +52,6 @@ class HomeScreen extends StatelessWidget {
 
 }
 
-/*
-        SliverList(
-          delegate: SliverChildBuilderDelegate((BuildContext ctx, int index) {
-            return Container(
-                alignment: Alignment.centerLeft,
-                color: Colors.white,
-                child: BPLogEntry(index));
-          }, childCount: 20),
-        ),
-
- */
-
 class HomeScreenBody extends StatefulWidget {
 
   _HomeScreenState createState() => _HomeScreenState();
@@ -77,23 +66,32 @@ class _HomeScreenState extends State<HomeScreenBody> with BloodPressureDBMixin {
     return new FutureBuilder<List<BloodPressure>>(
       future: listAll(),
       builder: (BuildContext context, AsyncSnapshot<List<BloodPressure>> snapshot) {
-        switch(snapshot.connectionState) {
-          case ConnectionState.none: return loadingList();
-          case ConnectionState.waiting: return loadingList();
-          default: {
-            debugPrint("Connection state is $snapshot.connectionState");
-            Widget list = snapshotList(snapshot.data);
-            return list;
+        if (snapshot.hasError) {
+          debugPrint(snapshot.error.toString());
+          return loadingList("Error loading list.");
+        }
+        else {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+              return loadingList("loading...");
+            case ConnectionState.waiting:
+              return loadingList("loading...");
+            default:
+              {
+                debugPrint("Connection state is $snapshot.connectionState");
+                Widget list = snapshotList(snapshot.data);
+                return list;
+              }
           }
         }
       },
     );
   }
 
-  Widget loadingList() {
+  Widget loadingList(String message) {
     return SliverList(
       delegate: SliverChildBuilderDelegate((BuildContext buildContext, int index) {
-        return Text('this is neat');
+        return Text(message);
       },
           childCount: 1
       ),
@@ -105,7 +103,12 @@ class _HomeScreenState extends State<HomeScreenBody> with BloodPressureDBMixin {
     return SliverList(
       delegate: SliverChildBuilderDelegate((BuildContext buildContext, int index) {
         debugPrint("Adding index $index to list");
-        return DismissibleBPLogEntry(data[index]);
+        if (index+1 == data.length) {
+          return DismissibleBPLogEntry(data[index], bottomBorder: 75.0);
+        }
+        else {
+          return DismissibleBPLogEntry(data[index]);
+        }
       },
           childCount: data.length
       ),
@@ -116,8 +119,9 @@ class _HomeScreenState extends State<HomeScreenBody> with BloodPressureDBMixin {
 
 class DismissibleBPLogEntry extends StatelessWidget {
   final BloodPressure _bp;
+  final double bottomBorder;
 
-  DismissibleBPLogEntry(this._bp);
+  DismissibleBPLogEntry(this._bp, {this.bottomBorder = 5.0});
 
   @override
   Widget build(BuildContext context) {
@@ -128,15 +132,16 @@ class DismissibleBPLogEntry extends StatelessWidget {
         await db.delete(_bp.id);
       },
       background: Container(color: Colors.red),
-      child: BPLogEntry(_bp)
+      child: BPLogEntry(_bp, bottomBorder: this.bottomBorder)
     );
   }
 }
 
 class BPLogEntry extends StatelessWidget {
   final BloodPressure _bp;
+  final double bottomBorder;
 
-  BPLogEntry(this._bp);
+  BPLogEntry(this._bp, {this.bottomBorder = 5.0});
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +153,8 @@ class BPLogEntry extends StatelessWidget {
         decoration: BoxDecoration(
             color: Colors.teal.shade100,
             border: Border(
-              top: BorderSide(color: Colors.white, width: 10.0),
+              top: BorderSide(color: Colors.white, width: 5.0),
+              bottom: BorderSide(color: Colors.white, width: bottomBorder),
               left: BorderSide(color: Colors.white, width: 10.0),
               right: BorderSide(color: Colors.white, width: 10.0),
             )

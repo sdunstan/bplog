@@ -80,25 +80,19 @@ class BloodPressureDB extends BloodPressureDBMixin {
 abstract class BloodPressureDBMixin {
 
   void insert(BloodPressure bp) async {
-    var db = _BloodPressureProvider();
-    await db.open();
+    _BloodPressureProvider db = _BloodPressureProvider();
     await db.insert(bp);
-    await db.close();
   }
 
   Future<List<BloodPressure>> listAll() async {
-    var db = _BloodPressureProvider();
-    await db.open();
+    _BloodPressureProvider db = _BloodPressureProvider();
     List<BloodPressure> list = await db.getAll();
-    await db.close();
     return list;
   }
 
   Future<int> delete(int id) async {
-    var db = _BloodPressureProvider();
-    await db.open();
+    _BloodPressureProvider db = _BloodPressureProvider();
     int count = await db.delete(id);
-    await db.close();
     return count;
   }
 
@@ -106,12 +100,19 @@ abstract class BloodPressureDBMixin {
 
 class _BloodPressureProvider {
 
-  Database db;
+  static final _BloodPressureProvider _instance = new _BloodPressureProvider._internal();
+  Database _db;
+
+  factory _BloodPressureProvider() {
+    return _instance;
+  }
+
+  _BloodPressureProvider._internal();
 
   Future open() async {
     var  databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'bplog.db');
-    db = await openDatabase(path, version: 1,
+    _db = await openDatabase(path, version: 1,
       onCreate: (Database db, int version) async {
         await db.execute('''
           create table $tableBP (
@@ -126,15 +127,18 @@ class _BloodPressureProvider {
   }
 
   Future<BloodPressure> insert(BloodPressure bp) async {
+    Database db = await _getDb();
     bp.id = await db.insert(tableBP, bp.toMap());
     return bp;
   }
 
   Future<int> delete(int id) async {
-    return db.delete(tableBP, where: "$columnId=$id");
+    Database db = await _getDb();
+    await db.delete(tableBP, where: "$columnId=$id");
   }
 
   Future<List<BloodPressure>> getAll() async {
+    Database db = await _getDb();
     List<BloodPressure> bpResults = List<BloodPressure>();
     List<Map> results = await db.query(tableBP, orderBy: columnTimestamp);
 
@@ -144,8 +148,12 @@ class _BloodPressureProvider {
     return bpResults;
   }
 
+  Future<Database> _getDb() async {
+    if (_db == null) {
+      await open();
+    }
+    return _db;
+  }
 
-
-  Future close() async => db.close();
 }
 
