@@ -22,13 +22,45 @@ import 'package:bplog/bp_form.dart';
 import 'package:bplog/persistence.dart';
 
 void main() async {
+  runApp(BloodPressureApp());
+}
 
-  runApp(MaterialApp(
-      title: 'Blood Pressure Log',
-      home: HomeScreen(),
-      routes: <String, WidgetBuilder>{
-        '/add': (BuildContext context) => BloodPressureInputPage()
-      }));
+/// This is the root StatefulWidget for the application.
+/// It allows us to add lifecycle events at the top level.
+class BloodPressureApp extends StatefulWidget {
+
+  @override
+  BloodPressureAppState createState() => BloodPressureAppState();
+
+}
+
+/// The application level state.
+class BloodPressureAppState extends State<BloodPressureApp> with BloodPressureDBMixin {
+
+  @override
+  void initState() {
+    debugPrint("Opening database");
+    openDatabase(); // mixin method proxies to a singleton
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    debugPrint("Cleaning up database.");
+    closeDatabase();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        title: 'Blood Pressure Log',
+        home: HomeScreen(),
+        routes: <String, WidgetBuilder>{
+          '/add': (BuildContext context) => BloodPressureInputPage()
+        }
+    );
+  }
 }
 
 class HomeScreen extends StatelessWidget {

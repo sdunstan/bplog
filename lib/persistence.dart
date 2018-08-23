@@ -20,6 +20,7 @@ import 'dart:async';
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:synchronized/synchronized.dart';
 
 final String tableBP = "bp";
 final String columnId = "_id";
@@ -79,6 +80,16 @@ class BloodPressureDB extends BloodPressureDBMixin {
 
 abstract class BloodPressureDBMixin {
 
+  void openDatabase() async {
+    _BloodPressureProvider db = _BloodPressureProvider();
+    db.open();
+  }
+
+  void closeDatabase() async {
+    _BloodPressureProvider db = _BloodPressureProvider();
+    db.close();
+  }
+
   void insert(BloodPressure bp) async {
     _BloodPressureProvider db = _BloodPressureProvider();
     await db.insert(bp);
@@ -102,6 +113,7 @@ class _BloodPressureProvider {
 
   static final _BloodPressureProvider _instance = new _BloodPressureProvider._internal();
   Database _db;
+  final _lock = new Lock();
 
   factory _BloodPressureProvider() {
     return _instance;
@@ -109,7 +121,7 @@ class _BloodPressureProvider {
 
   _BloodPressureProvider._internal();
 
-  Future open() async {
+  Future _open() async {
     var  databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'bplog.db');
     _db = await openDatabase(path, version: 1,
@@ -150,9 +162,28 @@ class _BloodPressureProvider {
 
   Future<Database> _getDb() async {
     if (_db == null) {
-      await open();
+      await _lock.synchronized(() async {
+        if (_db == null) {
+          await _open();
+        }
+      });
+
     }
     return _db;
+  }
+
+  void open() async {
+    await _getDb();
+  }
+
+  void close() async {
+    if (_db != null) {
+      await _lock.synchronized(() async {
+        if (_db != null) {
+          await _db.close();
+        }
+      });
+    }
   }
 
 }
