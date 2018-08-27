@@ -152,7 +152,7 @@ class _BloodPressureProvider {
   Future<List<BloodPressure>> getAll() async {
     Database db = await _getDb();
     List<BloodPressure> bpResults = List<BloodPressure>();
-    List<Map> results = await db.query(tableBP, orderBy: columnTimestamp);
+    List<Map> results = await db.query(tableBP, orderBy: "$columnTimestamp DESC");
 
     for (Map item in results) {
       bpResults.add(BloodPressure.fromMap(item));
