@@ -159,11 +159,27 @@ class DismissibleBPLogEntry extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dismissible (
       key: Key(_bp.id.toString()),
+      direction: DismissDirection.startToEnd,
       onDismissed: (direction) async {
         BloodPressureDB db = BloodPressureDB();
         await db.delete(_bp.id);
       },
-      background: Container(color: Colors.red),
+      background: Container(
+          decoration: BoxDecoration(
+              color: Colors.red,
+              border: Border(
+                top: BorderSide(color: Colors.white, width: 5.0),
+                bottom: BorderSide(color: Colors.white, width: bottomBorder),
+                left: BorderSide(color: Colors.white, width: 10.0),
+              )
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Icon(Icons.delete, color: Colors.white,),
+              Text('Delete', style: TextStyle(color: Colors.white),),
+            ],
+          )),
       child: BPLogEntry(_bp, bottomBorder: this.bottomBorder)
     );
   }
