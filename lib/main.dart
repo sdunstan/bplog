@@ -57,9 +57,17 @@ class BloodPressureAppState extends State<BloodPressureApp> with BloodPressureDB
         title: 'Blood Pressure Log',
         home: HomeScreen(),
         routes: <String, WidgetBuilder>{
-          '/add': (BuildContext context) => BloodPressureInputPage()
-        }
+          '/add': (BuildContext context) => BloodPressureInputPage(),
+          '/analysis': (BuildContext context) => AnalysisPage(),
+        },
     );
+  }
+}
+
+class AnalysisPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Text('Analysis');
   }
 }
 
@@ -68,7 +76,18 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Blood Pressure Log')),
+      appBar: AppBar(
+          title: Text('Blood Pressure Log'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.multiline_chart),
+            tooltip: 'Analysis',
+            onPressed: () {
+              Navigator.of(context).pushNamed('/analysis');
+            }
+          )
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).pushNamed('/add');
@@ -168,9 +187,9 @@ class DismissibleBPLogEntry extends StatelessWidget {
           decoration: BoxDecoration(
               color: Colors.red,
               border: Border(
-                top: BorderSide(color: Colors.white, width: 5.0),
-                bottom: BorderSide(color: Colors.white, width: bottomBorder),
-                left: BorderSide(color: Colors.white, width: 10.0),
+                top: BorderSide(color: Colors.grey.shade50,  width: 5.0),
+                bottom: BorderSide(color: Colors.grey.shade50, width: bottomBorder),
+                left: BorderSide(color: Colors.grey.shade50, width: 10.0),
               )
           ),
           child: Row(
@@ -188,6 +207,7 @@ class DismissibleBPLogEntry extends StatelessWidget {
 class BPLogEntry extends StatelessWidget {
   final BloodPressure _bp;
   final double bottomBorder;
+  static final DateFormat _fmt = DateFormat.yMMMEd().add_jm();
 
   BPLogEntry(this._bp, {this.bottomBorder = 5.0});
 
@@ -196,15 +216,15 @@ class BPLogEntry extends StatelessWidget {
     int sys = _bp.systolic;
     int dia = _bp.diastolic;
     DateTime bpTime = DateTime.fromMillisecondsSinceEpoch(this._bp.readingTime);
-    DateFormat fmt = DateFormat.yMMMMd().add_jm();
+
     Widget container = Container(
         decoration: BoxDecoration(
             color: Colors.teal.shade100,
             border: Border(
-              top: BorderSide(color: Colors.white, width: 5.0),
-              bottom: BorderSide(color: Colors.white, width: bottomBorder),
-              left: BorderSide(color: Colors.white, width: 10.0),
-              right: BorderSide(color: Colors.white, width: 10.0),
+              top: BorderSide(color: Colors.grey.shade50, width: 5.0),
+              bottom: BorderSide(color: Colors.grey.shade50, width: bottomBorder),
+              left: BorderSide(color: Colors.grey.shade50, width: 10.0),
+              right: BorderSide(color: Colors.grey.shade50, width: 10.0),
             )
         ),
         padding: const EdgeInsets.all(12.0),
@@ -216,7 +236,7 @@ class BPLogEntry extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(fmt.format(bpTime))
+                Text(_fmt.format(bpTime))
               ],
             ),
             Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
