@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:bplog/bp_form.dart';
 import 'package:bplog/persistence.dart';
+import 'package:bplog/analysis.dart';
 
 void main() async {
   runApp(BloodPressureApp());
@@ -54,20 +55,13 @@ class BloodPressureAppState extends State<BloodPressureApp> with BloodPressureDB
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Blood Pressure Log',
-        home: HomeScreen(),
-        routes: <String, WidgetBuilder>{
-          '/add': (BuildContext context) => BloodPressureInputPage(),
-          '/analysis': (BuildContext context) => AnalysisPage(),
-        },
+      title: 'Blood Pressure Log',
+      home: HomeScreen(),
+      routes: <String, WidgetBuilder>{
+        '/add': (BuildContext context) => BloodPressureInputPage(),
+        '/analysis': (BuildContext context) => AnalysisPage(),
+      },
     );
-  }
-}
-
-class AnalysisPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Text('Analysis');
   }
 }
 
