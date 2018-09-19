@@ -56,6 +56,10 @@ class _AnalysisPageSate extends State<AnalysisPageBody> with BloodPressureDBMixi
                           Text(
                               "Systolic Chart",
                               style: TextStyle(fontSize: 20.0, color: Colors.black.withAlpha(170))
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.info_outline),
+                            onPressed: () {},
                           )
                         ],
                       ),
@@ -67,6 +71,10 @@ class _AnalysisPageSate extends State<AnalysisPageBody> with BloodPressureDBMixi
                           Text(
                               "Diastolic Chart",
                               style: TextStyle(fontSize: 20.0, color: Colors.black.withAlpha(170))
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.info_outline),
+                            onPressed: () {},
                           )
                         ],
                       ),
