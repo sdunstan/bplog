@@ -49,13 +49,18 @@ class _AnalysisPageSate extends State<AnalysisPageBody> with BloodPressureDBMixi
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
+
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
+                          Spacer(),
                           Text(
                               "Systolic Chart",
-                              style: TextStyle(fontSize: 20.0, color: Colors.black.withAlpha(170))
+                              style: TextStyle(
+                                  fontSize: 20.0,
+                                  color: Colors.black.withAlpha(170),
+                              )
                           ),
                           IconButton(
                             icon: Icon(Icons.info_outline),
@@ -68,6 +73,7 @@ class _AnalysisPageSate extends State<AnalysisPageBody> with BloodPressureDBMixi
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
+                          Spacer(),
                           Text(
                               "Diastolic Chart",
                               style: TextStyle(fontSize: 20.0, color: Colors.black.withAlpha(170))

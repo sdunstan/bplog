@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import 'package:bplog/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:bplog/bp_form.dart';
@@ -71,11 +72,11 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text('Blood Pressure Log'),
+          title: Text(AppStrings.of(context).title),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.multiline_chart),
-            tooltip: 'Analysis',
+            tooltip: AppStrings.of(context).analysisTooltip,
             onPressed: () {
               Navigator.of(context).pushNamed('/analysis');
             }
@@ -86,7 +87,7 @@ class HomeScreen extends StatelessWidget {
         onPressed: () {
           Navigator.of(context).pushNamed('/add');
         },
-        tooltip: 'Add blood pressure reading',
+        tooltip: AppStrings.of(context).addFabTooltip,
         child: new Icon(Icons.add),
       ),
       body: CustomScrollView(slivers: <Widget>[
@@ -113,14 +114,14 @@ class _HomeScreenState extends State<HomeScreenBody> with BloodPressureDBMixin {
       builder: (BuildContext context, AsyncSnapshot<List<BloodPressure>> snapshot) {
         if (snapshot.hasError) {
           debugPrint(snapshot.error.toString());
-          return loadingList("Error loading list.");
+          return loadingList(AppStrings.of(context).generalErrorMessage);
         }
         else {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
-              return loadingList("loading...");
+              return loadingList(AppStrings.of(context).loadingMessage);
             case ConnectionState.waiting:
-              return loadingList("loading...");
+              return loadingList(AppStrings.of(context).loadingMessage);
             default:
               {
                 debugPrint("Connection state is $snapshot.connectionState");
@@ -254,3 +255,4 @@ class BPLogEntry extends StatelessWidget {
     return container;
   }
 }
+  

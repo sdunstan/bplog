@@ -11,7 +11,7 @@ dependencies:
 
   sqflite: any
   intl: ^0.15.7
-  charts_flutter: ^0.2.0
+  charts_flutter: ^0.4.0
 
 dev_dependencies:
   flutter_test:
